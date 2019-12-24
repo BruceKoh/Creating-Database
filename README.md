@@ -14,7 +14,7 @@ Microsoft SQL Server is a database server which primarily stores and retreives d
 
 3. After installing Anaconda, open Anaconda Prompt and install pyodbc package
 
-`conda install -c anaconda pyodbc`
+	`conda install -c anaconda pyodbc`
 
 ## Getting started
 
