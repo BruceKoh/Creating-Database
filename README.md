@@ -13,7 +13,16 @@ Microsoft SQL Server is a database server which primarily stores and retreives d
 * Choose latest Python version. Current latest version is Python 3.7. Follow the prompts and install
 
 3. After installing Anaconda, open Anaconda Prompt and install pyodbc package
-*`conda install -c anaconda pyodbc`
+
+`conda install -c anaconda pyodbc`
+
+## Getting started
+
+
+
+
+
+
 
 
 
