@@ -17,6 +17,23 @@ Microsoft SQL Server is a database server which primarily stores and retreives d
 	`conda install -c anaconda pyodbc`
 
 ## Getting started
+### Getting SQL Server ready for external user access
+
+1. Ensure that your local server is running
+
+![Repo List](https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture1.PNG)
+
+2. Select Protocols for Microsoft SQL Express
+
+![Repo List](https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture2.PNG)
+
+3. If TCP/IP is disabled, double click on it and set it to enabled
+
+![Repo List](https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture3.PNG)
+
+4. Go to IP Addresses and ensure that all IP are active in the list
+
+![Repo List](https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture4.PNG)
 
 
 
