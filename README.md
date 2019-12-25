@@ -34,17 +34,18 @@ Microsoft SQL Server is a database server which primarily stores and retreives d
 4. Go to IP Addresses and ensure that all IP are active in the list
 
 <p align="center">
-  <src="https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture4.PNG">
+<img src="https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture4.PNG">
 </p>
 
 5. For the IPAll option, enter 1433 for TCP Port
 	* Note that you can select another port number too, but SQL defaults to 1433, so we will use port 1433 here
 
 <p align="center">
-  <src="https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture5.PNG">
+<img src="https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture5.PNG">
 </p>
 
 6. Restart the Microsoft SQL Server to enable the changes and is ready for external user access
+
 
 
 
