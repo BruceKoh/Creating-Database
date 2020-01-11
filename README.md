@@ -46,6 +46,44 @@ Microsoft SQL Server is a database server which primarily stores and retreives d
 
 6. Restart the Microsoft SQL Server to enable the changes and is ready for external user access
 
+### Adding users to SQL Server Management Studio
+
+1. Open SQL Server Management Studio
+
+2. Right click Logins folder under Security and select new login
+   - Select SQL Server authentication
+   - Enter Login name for user
+   - Enter Password for user
+   - Check/Uncheck password expiration 
+   - Set default database to the database you want the user to    	have access to
+
+<p align="center">
+<img src="https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture6.PNG">
+</p>
+
+3. Select [Server-Level Roles](https://docs.microsoft.com/en-us/sql/relational-databases/security/authentication-access/server-level-roles?view=sql-server-ver15) accordingly. In this case public.
+
+<p align="center">
+<img src="https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture7.PNG">
+</p>
+
+4. Select User Mapping and select the database you want user to access. Select [Database role membership](https://docs.microsoft.com/en-us/sql/relational-databases/security/authentication-access/database-level-roles?view=sql-server-ver15) accordingly.
+
+<p align="center">
+<img src="https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture8.PNG">
+</p>
+
+
+5. Select Status and grant permission and login
+
+<p align="center">
+<img src="https://github.com/BruceKoh/Creating-Database/blob/master/Pic/Capture9.PNG">
+</p>
+
+6. User is now set up and can start using the database
+
+
+
 
 
 
