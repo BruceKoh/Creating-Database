@@ -80,7 +80,18 @@ Microsoft SQL Server is a database server which primarily stores and retreives d
 <img src="https://github.com/Mingjie-K/STAMS/blob/master/Waterfall/Pic/Capture9.PNG">
 </p>
 
-6. User is now set up and can start using the database
+6. Select SQL Server and Windows Authentication mode
+<p align="center">
+<img src="https://github.com/Mingjie-K/STAMS/blob/master/Waterfall/Pic/Capture10.PNG">
+</p>
+
+7. For no timeout connection to the server, set 0 in remote query timeout (Default 600)
+<p align="center">
+<img src="https://github.com/Mingjie-K/STAMS/blob/master/Waterfall/Pic/Capture11.PNG">
+</p>
+
+8. User is now set up and can start using the database
+
 
 
 
