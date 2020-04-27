@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
-# %%
 
 # <h1><center>POR</center></h1>
 
 # #### Transpose POR
 
-# %%
+# In[ ]:
 
 
 import os
@@ -19,7 +18,7 @@ import sqlalchemy as db
 from urllib.parse import quote_plus
 
 
-# %%
+# In[ ]:
 
 
 path = r'C:\Users\KohMansf\Documents\STAMS_FILES\Waterfall\Automation\POR Transpose'
@@ -29,7 +28,7 @@ files = glob.glob(path + '/*.xlsb')
 latest_por = max(files, key=os.path.getctime)
 
 
-# %%
+# In[ ]:
 
 
 app = xw.App()
@@ -41,27 +40,27 @@ book.close()
 app.kill()
 
 
-# %%
+# In[ ]:
 
 
 latest_por.head()
 
 
-# %%
+# In[ ]:
 
 
 Dates = latest_por.columns[10:]
 Col = latest_por.columns[0:10]
 
 
-# %%
+# In[ ]:
 
 
 latest_por.iloc[:, 10:] = latest_por.iloc[:, 10:].fillna(0)
 latest_por.tail(10)
 
 
-# %%
+# In[ ]:
 
 
 latest_por = pd.melt(latest_por,
@@ -69,21 +68,22 @@ latest_por = pd.melt(latest_por,
                      value_vars=Dates,
                      value_name='Value',
                      var_name='Attribute')
+latest_por.iloc[:,10] = latest_por.iloc[:,10].apply(pd.to_datetime)
 
 
-# %%
+# In[ ]:
 
 
 latest_por.head(10)
 
 
-# %%
+# In[ ]:
 
 
 latest_por = latest_por.iloc[:, [0, 2, 4, 5, 6, 7, 9, 10, 11]]
 
 
-# %%
+# In[ ]:
 
 
 yyyy_ww = latest_por.iloc[0, 0]
@@ -91,7 +91,7 @@ yyyy_ww = latest_por.iloc[0, 0]
 file = 'POR_' + yyyy_ww + '.csv'
 
 
-# %%
+# In[ ]:
 
 
 database_path = r'C:\Users\KohMansf\Documents\STAMS_FILES\Waterfall\Automation\Database\POR'
@@ -101,21 +101,21 @@ latest_por.to_csv(file, index=False)
 
 # #### Data Cleaning
 
-# %%
+# In[ ]:
 
 
 now = datetime.datetime.now()
 year = str(now.year)
 
 
-# %%
+# In[ ]:
 
 
 por_files = os.listdir(database_path)
 files_csv = [f for f in por_files if f[4:8] == year]
 
 
-# %%
+# In[ ]:
 
 
 df_por = pd.DataFrame()
@@ -127,7 +127,7 @@ for f in files_csv:
 df_por.tail()
 
 
-# %%
+# In[ ]:
 
 
 df_por['Attribute'] = df_por['Attribute'].apply(pd.to_datetime)
@@ -138,17 +138,17 @@ df_por.tail()
 
 # **We get Region base on target location (Data from original POR file)**
 
-# %%
+# In[ ]:
 
 
 df_region = pd.read_excel(
-    r'C:\Users\KohMansf\Documents\STAMS_FILES\Waterfall\DB\Country of Target Location\Country of Target Location.xlsx',
+    r'C:\Users\KohMansf\Documents\STAMS_FILES\Waterfall\Previous DB\Country of Target Location\Country of Target Location.xlsx',
     sheet_name='Country of Target Location',
     na_filter=False,
     usecols='A:B')
 
 
-# %%
+# In[ ]:
 
 
 df_merged = pd.merge(df_por, df_region, on='Target Location')
@@ -157,7 +157,7 @@ df_merged['Planning Part Group'] = df_merged['Planning Part Group'].str.rstrip(
 df_merged.head()
 
 
-# %%
+# In[ ]:
 
 
 mpa_dict = {
@@ -177,14 +177,14 @@ mpa_dict = {
 }
 
 
-# %%
+# In[ ]:
 
 
 df_merged['MPA'] = df_merged['MPA'].map(lambda x: mpa_dict.get(x, x))
 df_merged.head()
 
 
-# %%
+# In[ ]:
 
 
 df_final_por = df_merged[[
@@ -195,7 +195,7 @@ df_final_por = df_merged[[
 df_final_por
 
 
-# %%
+# In[ ]:
 
 
 df_final_por = df_final_por.rename(
@@ -213,21 +213,15 @@ df_final_por['QtyType'] = 'POR'
 df_final_por.head()
 
 
-# %%
-
-
-df_final_por
-
-
 # #### Output File
 
-# %%
+# In[ ]:
 
 
 output = year + '_to_upload.csv'
 
 
-# %%
+# In[ ]:
 
 
 df_final_por.to_csv(output, index=False)
@@ -237,13 +231,13 @@ df_final_por.to_csv(output, index=False)
 
 # **HP Server**
 
-# %%
+# In[ ]:
 
 
 table = 'POR' + year
 
 
-# %%
+# In[ ]:
 
 
 conn = 'DRIVER={ODBC Driver 17 for SQL Server};SERVER=15.46.110.222,1433;DATABASE=POR;UID=Admin;PWD=123789'
@@ -257,7 +251,7 @@ connection = engine.connect()
 table_name = table
 
 
-# %%
+# In[ ]:
 
 
 df_final_por.to_sql(table_name,
