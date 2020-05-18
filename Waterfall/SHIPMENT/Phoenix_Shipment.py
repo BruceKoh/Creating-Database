@@ -3,7 +3,7 @@
 
 # <h1><center> SHIPMENT FILE </center></h1>
 
-# In[22]:
+# In[ ]:
 
 
 import pandas as pd
@@ -16,21 +16,21 @@ from urllib.parse import quote_plus
 
 # #### PHOENIX
 
-# In[2]:
+# In[ ]:
 
 
 path = r'C:\PHOENIX\CSV_Files'
 os.chdir(path)
 
 
-# In[3]:
+# In[ ]:
 
 
 phoenix = pd.read_csv('v_Output_Lite.csv',
-                      encoding="ISO-8859-1", index_col='DATA_ELEMENT')
+                      encoding="ISO-8859-1", index_col='DATA_ELEMENT', low_memory=False)
 
 
-# In[4]:
+# In[ ]:
 
 
 phoenix.head()
@@ -38,39 +38,39 @@ phoenix.head()
 
 # **Filter Data**
 
-# In[5]:
+# In[ ]:
 
 
 phoenix_actuals = phoenix.loc['ACTUALS', [
     'PLTFRM_NM', 'PLNG_PART_NR', 'REGION_CD', 'MPA_NM', 'CAL_DAY_DT', '#BUILD_ACTUAL_QT']]
 
 
-# In[6]:
+# In[ ]:
 
 
 phoenix_actuals.head()
 
 
-# In[7]:
+# In[ ]:
 
 
 phoenix_actuals_drop = phoenix_actuals.dropna(
     axis=0, subset=['PLTFRM_NM', 'REGION_CD', 'MPA_NM'])
 
 
-# In[8]:
+# In[ ]:
 
 
 phoenix_actuals_drop = phoenix_actuals_drop.reset_index()
 
 
-# In[9]:
+# In[ ]:
 
 
 phoenix_actuals_drop
 
 
-# In[10]:
+# In[ ]:
 
 
 phoenix_filter = phoenix_actuals_drop.loc[(phoenix_actuals_drop['MPA_NM'] == 'DSG Korea') |
@@ -83,20 +83,20 @@ phoenix_filter = phoenix_actuals_drop.loc[(phoenix_actuals_drop['MPA_NM'] == 'DS
                                           (phoenix_actuals_drop['MPA_NM'] == 'Flex PTP Malasya')]
 
 
-# In[11]:
+# In[ ]:
 
 
 phoenix_filter = phoenix_filter.drop(columns={'DATA_ELEMENT'})
 
 
-# In[12]:
+# In[ ]:
 
 
 phoenix_filter['CAL_DAY_DT'] = phoenix_filter['CAL_DAY_DT'].apply(
     pd.to_datetime)
 
 
-# In[13]:
+# In[ ]:
 
 
 phoenix_filter = pd.pivot_table(phoenix_filter, values='#BUILD_ACTUAL_QT',
@@ -105,40 +105,42 @@ phoenix_filter = pd.pivot_table(phoenix_filter, values='#BUILD_ACTUAL_QT',
                                 aggfunc=np.sum).reset_index()
 
 
-# In[14]:
+# In[ ]:
 
 
 phoenix_filter
 
 
-# In[15]:
+# In[ ]:
 
 
 phoenix_filter['YYYYWW'] = phoenix_filter['CAL_DAY_DT'].apply(lambda x: str(x.isocalendar()[0]) +
                                                               str(x.isocalendar()[1] - 1).zfill(2))
 phoenix_filter['QtyType'] = 'SHIP'
 
-
-# In[16]:
-
-
-phoenix_filter
+phoenix_filter = phoenix_filter.loc[phoenix_filter['#BUILD_ACTUAL_QT'] != 0]
 
 
-# In[17]:
+# In[ ]:
+
+
+phoenix_filter.head()
+
+
+# In[ ]:
 
 
 latest_date = phoenix_filter['CAL_DAY_DT'].max()
 
 
-# In[18]:
+# In[ ]:
 
 
-shipment_path = r'C:\Users\KohMansf\Documents\STAMS_FILES\Waterfall\Automation\Database\SHIPMENT'
+shipment_path = r'C:\Users\KohMansf\Documents\STAMS\Waterfall\Database\SHIPMENT'
 os.chdir(shipment_path)
 
 
-# In[19]:
+# In[ ]:
 
 
 shipment_read = pd.read_csv('Shipment Data.csv')
@@ -146,9 +148,15 @@ shipment_read = pd.read_csv('Shipment Data.csv')
 shipment_read['CAL_DAY_DT'] = shipment_read['CAL_DAY_DT'].apply(pd.to_datetime)
 
 
+# In[ ]:
+
+
+shipment_read
+
+
 # **If phoenix shipment date is later than current shipment data, we update**
 
-# In[20]:
+# In[ ]:
 
 
 shipment_date = shipment_read['CAL_DAY_DT'].max()
@@ -163,7 +171,7 @@ if latest_date > shipment_date:
 
 # **HP Server**
 
-# In[23]:
+# In[ ]:
 
 
 conn = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=15.46.110.222,1433;DATABASE=SHIPMENT;UID=Admin;PWD=123789"
@@ -177,11 +185,11 @@ connection = engine.connect()
 table_name = 'SHIPMENT'
 
 
-# In[39]:
+# In[ ]:
 
 
 shipment_df = pd.read_csv('Shipment Data.csv')
-col = ['Platform','SKU','Region','MPA','DATES','Qty','YYYYWW','QtyType']
+col = ['Platform', 'SKU', 'Region', 'MPA', 'DATES', 'Qty', 'YYYYWW', 'QtyType']
 shipment_df.columns = col
 shipment_df.to_sql(table_name,
                    engine,

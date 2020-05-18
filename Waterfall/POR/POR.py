@@ -21,7 +21,7 @@ from urllib.parse import quote_plus
 # In[ ]:
 
 
-path = r'C:\Users\KohMansf\Documents\STAMS_FILES\Waterfall\Automation\POR Transpose'
+path = r'C:\Users\KohMansf\Documents\STAMS\Waterfall\POR Transpose'
 os.chdir(path)
 files = glob.glob(path + '/*.xlsb')
 
@@ -94,7 +94,7 @@ file = 'POR_' + yyyy_ww + '.csv'
 # In[ ]:
 
 
-database_path = r'C:\Users\KohMansf\Documents\STAMS_FILES\Waterfall\Automation\Database\POR'
+database_path = r'C:\Users\KohMansf\Documents\STAMS\Waterfall\Database\POR'
 os.chdir(database_path)
 latest_por.to_csv(file, index=False)
 
@@ -142,7 +142,7 @@ df_por.tail()
 
 
 df_region = pd.read_excel(
-    r'C:\Users\KohMansf\Documents\STAMS_FILES\Waterfall\Previous DB\Country of Target Location\Country of Target Location.xlsx',
+    r'C:\Users\KohMansf\Documents\STAMS\Waterfall\Database\Country of Target Location\Country of Target Location.xlsx',
     sheet_name='Country of Target Location',
     na_filter=False,
     usecols='A:B')
@@ -275,4 +275,10 @@ df_final_por.to_sql(table_name,
                     })
 print(df_final_por.head())
 print(df_final_por.shape)
+
+
+# In[ ]:
+
+
+
 

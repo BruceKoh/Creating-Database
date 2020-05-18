@@ -17,7 +17,7 @@ import os
 # In[ ]:
 
 
-path = r'C:\Users\KohMansf\Documents\STAMS_FILES\Waterfall\Automation\Database\FULLSHIPVPOR'
+path = r'C:\Users\KohMansf\Documents\STAMS\Waterfall\Database\FULLSHIPVPOR'
 os.chdir(path)
 
 
