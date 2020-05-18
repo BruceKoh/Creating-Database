@@ -1,7 +1,12 @@
+# Ignore Waterfall Files
 Waterfall/Allan/
 Waterfall/BRD/
 Waterfall/Database/
 Waterfall/POR Transpose/
 Waterfall/Powerpoint/
 Waterfall/Waterfall_PORnShip_Tool/
+Waterfall/SHIPMENT/.ipynb_checkpoints/
+Waterfall/POR/POR.md
+Waterfall/POR/.ipynb_checkpoints/
+Waterfall/FINALSHIPVPOR/.ipynb_checkpoints/
 desktop.ini
