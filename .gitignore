@@ -9,4 +9,14 @@ Waterfall/SHIPMENT/.ipynb_checkpoints/
 Waterfall/POR/POR.md
 Waterfall/POR/.ipynb_checkpoints/
 Waterfall/FINALSHIPVPOR/.ipynb_checkpoints/
+
+# Ignore Exposure Simulator Files
+Exposure Simulator/BOM Sample Files/
+Exposure Simulator/BRD/
+Exposure Simulator/Database/
+Exposure Simulator/Develop Tool/
+Exposure Simulator/Inventory Report/
+Exposure Simulator/Meeting/
 desktop.ini
+
+
