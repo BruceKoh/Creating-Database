@@ -68,7 +68,7 @@ latest_por = pd.melt(latest_por,
                      value_vars=Dates,
                      value_name='Value',
                      var_name='Attribute')
-latest_por.iloc[:,10] = latest_por.iloc[:,10].apply(pd.to_datetime)
+latest_por.iloc[:, 10] = latest_por.iloc[:, 10].apply(pd.to_datetime)
 
 
 # In[ ]:
@@ -225,6 +225,8 @@ output = year + '_to_upload.csv'
 
 
 df_final_por.to_csv(output, index=False)
+df_final_por.to_csv(
+    r'C:\Users\KohMansf\Documents\STAMS\Exposure Simulator\Database\POR\2020_to_upload.csv', index=False)
 
 
 # #### Output to Database
