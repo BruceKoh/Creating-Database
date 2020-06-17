@@ -225,8 +225,8 @@ output = year + '_to_upload.csv'
 
 
 df_final_por.to_csv(output, index=False)
-df_final_por.to_csv(
-    r'C:\Users\KohMansf\Documents\STAMS\Exposure Simulator\Database\POR\2020_to_upload.csv', index=False)
+os.chdir(r'C:\Users\KohMansf\Documents\STAMS\Exposure Simulator\Database\POR')
+df_final_por.to_csv(output, index=False)
 
 
 # #### Output to Database
