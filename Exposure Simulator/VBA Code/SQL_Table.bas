@@ -48,7 +48,8 @@ Public Sub Create_Table()
         Query SQL_Create_Table
         Conn.Close
     Else
-        MsgBox "We have a problem!"
+        MsgBox "Please connect to HP Remote Access"
+        Exit Sub
     End If
        
 End Sub

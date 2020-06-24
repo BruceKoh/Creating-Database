@@ -44,7 +44,8 @@ Public Sub SQLPLATFORM_REGION(ByRef Platform As Collection)
             QueryCol SQL, col, coltitle, rg
             Conn.Close
         Else
-            MsgBox "We have a problem!"
+        MsgBox "Please connect to HP Remote Access"
+        Exit Sub
         End If
     Next P
     
@@ -71,13 +72,45 @@ Public Sub SQLPLATFORM_REGION_COMPARE(ByRef Platform As Collection)
             QueryCol SQL, col, coltitle, rg
             Conn.Close
         Else
-            MsgBox "We have a problem!"
+        MsgBox "Please connect to HP Remote Access"
+        Exit Sub
         End If
     Next P
     
 End Sub
+Public Sub SQLMPA(ByRef Platform As Collection, ByRef region As Collection)
+    
+    Dim SQL As String
+    Dim Connected As Boolean, col As Long, coltitle As Long
+    Dim rerg As Range, rg As Range
+    Set rerg = RefSheet.Range("L1").CurrentRegion
+    rerg.ClearContents
+    
+    Dim P As Variant, R As Variant
+    For Each P In Platform
+        For Each R In region
+            coltitle = 12
+            col = 12
+            'GETTING COMPARE POR DATA
+            SQL = "SELECT DISTINCT MPA FROM ExposurePOR.dbo.POR WHERE Platform = " & " '" & P & "'" & _
+            " AND Region = '" & R & "'"
+ 
+            Connected = ConnectToDB(dbAddress, uName, pWord)
+            Set rg = RefSheet.Range("L1").CurrentRegion
+        
+            If Connected Then
+                QueryCol SQL, col, coltitle, rg
+                Conn.Close
+            Else
+                MsgBox "Please connect to HP Remote Access"
+                Exit Sub
+            End If
+        Next R
+    Next P
+    
+End Sub
 
-Public Sub SQLPLATFORM_REGION_SKU(ByRef Platform As Collection, ByRef Region As Collection)
+Public Sub SQLPLATFORM_REGION_SKU(ByRef Platform As Collection, ByRef region As Collection)
     
     Dim SQL As String
     Dim Connected As Boolean, col As Long, coltitle As Long
@@ -87,7 +120,7 @@ Public Sub SQLPLATFORM_REGION_SKU(ByRef Platform As Collection, ByRef Region As 
     
     Dim P As Variant, R As Variant
     For Each P In Platform
-        For Each R In Region
+        For Each R In region
             coltitle = 5
             col = 5
             'GETTING BASE POR DATA
@@ -101,13 +134,14 @@ Public Sub SQLPLATFORM_REGION_SKU(ByRef Platform As Collection, ByRef Region As 
                 QueryCol SQL, col, coltitle, rg
                 Conn.Close
             Else
-                MsgBox "We have a problem!"
+                MsgBox "Please connect to HP Remote Access"
+                Exit Sub
             End If
         Next R
     Next P
     
 End Sub
-Public Sub SQLPLATFORM_REGION_SKU_COMPARE(ByRef Platform As Collection, ByRef Region As Collection)
+Public Sub SQLPLATFORM_REGION_SKU_COMPARE(ByRef Platform As Collection, ByRef region As Collection)
     
     Dim SQL As String
     Dim Connected As Boolean, col As Long, coltitle As Long
@@ -117,7 +151,7 @@ Public Sub SQLPLATFORM_REGION_SKU_COMPARE(ByRef Platform As Collection, ByRef Re
     
     Dim P As Variant, R As Variant
     For Each P In Platform
-        For Each R In Region
+        For Each R In region
             coltitle = 10
             col = 10
             'GETTING BASE POR DATA
@@ -131,7 +165,8 @@ Public Sub SQLPLATFORM_REGION_SKU_COMPARE(ByRef Platform As Collection, ByRef Re
                 QueryCol SQL, col, coltitle, rg
                 Conn.Close
             Else
-                MsgBox "We have a problem!"
+                MsgBox "Please connect to HP Remote Access"
+                Exit Sub
             End If
         Next R
     Next P
@@ -145,28 +180,43 @@ Sub SQLSKUCOMPARE(ByRef SKU_Base As Collection, ByRef SKU_Compare As Collection)
     Dim rerg As Range, rg As Range
     Set rerg = output.Range("A1").CurrentRegion
     rerg.ClearContents
+    
+    Dim mpa As String, row As Long, j As Long
+    row = 2
 
     Dim Sku_B As Variant, Sku_C As Variant
     For Each Sku_B In SKU_Base
+        mpa = Quan.Range("C" & row).Value2
+        j = 1
         For Each Sku_C In SKU_Compare
             coltitle = 1
             col = 1
             'Compare Table
-            SQL = "SELECT t1.Owner,t1.SKU,t1.PartRev,t1.Category,t1.Component,t1.Description,t1.[Per Rate] FROM " & _
-            "(SELECT * FROM ExposureSim.dbo.BOMParts WHERE SKU = '" & Sku_B & "'" & _
-            ") AS t1 FULL OUTER JOIN (SELECT * FROM ExposureSim.dbo.BOMParts WHERE SKU = '" & Sku_C & "'" & _
-            ") AS t2" & " ON (t1.Component = t2.Component) WHERE t2.Owner IS NULL"
-
-            Connected = ConnectToDB(dbAddress, uName, pWord)
-            Set rg = output.Range("A1").CurrentRegion
-
-            If Connected Then
-                QueryOut SQL, col, coltitle, rg
-                Conn.Close
+            If j = 1 Then
+                SQL = "SELECT DISTINCT t1.Owner,t1.SKU,t1.PartRev,t1.Category,t1.Component,t1.Description,t1.[Per Rate], t1.Cost, t1.MPA FROM " & _
+                "(SELECT * FROM ExposureSim.dbo.BOMParts WHERE SKU = '" & Sku_B & "'" & " AND MPA = '" & mpa & "'" & _
+                ") AS t1 FULL OUTER JOIN (SELECT * FROM ExposureSim.dbo.BOMParts WHERE SKU = '" & Sku_C & "'" & _
+                ") AS t2" & " ON (t1.Component = t2.Component) WHERE t2.Owner IS NULL"
             Else
-                MsgBox "We have a problem!"
+                SQL = SQL & " UNION " & "SELECT DISTINCT t1.Owner,t1.SKU,t1.PartRev,t1.Category,t1.Component,t1.Description,t1.[Per Rate], t1.Cost, t1.MPA FROM " & _
+                "(SELECT * FROM ExposureSim.dbo.BOMParts WHERE SKU = '" & Sku_B & "'" & " AND MPA = '" & mpa & "'" & _
+                ") AS t1 FULL OUTER JOIN (SELECT * FROM ExposureSim.dbo.BOMParts WHERE SKU = '" & Sku_C & "'" & _
+                ") AS t2" & " ON (t1.Component = t2.Component) WHERE t2.Owner IS NULL"
             End If
+            j = j + 1
         Next Sku_C
+        
+        Connected = ConnectToDB(dbAddress, uName, pWord)
+        Set rg = output.Range("A1").CurrentRegion
+
+        If Connected Then
+            QueryOut SQL, col, coltitle, rg
+            Conn.Close
+        Else
+            MsgBox "Please connect to HP Remote Access"
+            Exit Sub
+        End If
+        row = row + 1
     Next Sku_B
 
 End Sub
@@ -193,7 +243,8 @@ Sub SQLSKU_MPA(ByRef SKU_Base As Collection)
             QueryQuan SQL, col, coltitle, rg
             Conn.Close
         Else
-            MsgBox "We have a problem!"
+            MsgBox "Please connect to HP Remote Access"
+            Exit Sub
         End If
 
     Next Sku_B
@@ -224,7 +275,8 @@ Sub get_price()
             Queryprice SQL, col, coltitle, row
             Conn.Close
         Else
-            MsgBox "We have a problem!"
+            MsgBox "Please connect to HP Remote Access"
+            Exit Sub
         End If
         
         row = row + 1

@@ -60,7 +60,9 @@ Public Sub Get_Platform()
         Query SQL_Platform, col
         Conn.Close
     Else
-        MsgBox "We have a problem!"
+        MsgBox "Please connect to HP Remote Access and try opening again"
+        'Exit Sub
+        ActiveWorkbook.Close
     End If
        
 End Sub

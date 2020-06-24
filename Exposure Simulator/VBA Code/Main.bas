@@ -10,10 +10,14 @@ Sub user_main()
 End Sub
 
 Sub DisplayUserList()
+Attribute DisplayUserList.VB_ProcData.VB_Invoke_Func = "u\n14"
 
     Dim form As New Platform, rgsku As Range
-    
-    form.Show
+    With form
+        .Height = 500
+        .Width = 930
+        .Show
+    End With
     
     If form.Cancelled = True Then
         MsgBox "The UserForm was cancelled."
@@ -48,7 +52,7 @@ Sub user_done()
             dict.Add oUser.sku, oUser
         Next i
         'Remove duplicates
-        rgout.RemoveDuplicates Columns:=5, Header:=xlYes
+
         Set rgout = output.Range("A1").CurrentRegion
         Dim key As Variant
         
@@ -58,23 +62,31 @@ Sub user_done()
                 Set oUser = dict(key)
                 sku = output.Cells(j, 2).Value
                 If sku = key Then
-                    output.Cells(j, 8) = oUser.quantity
-                    output.Cells(j, 10) = oUser.mpa
+                    output.Cells(j, 10) = oUser.quantity
+'                    output.Cells(j, 10) = oUser.mpa
                 End If
             Next j
         Next key
 
-        output.Range("I1") = "Total Quantity"
-        output.Range("J1") = "MPA"
-        output.Range("L1") = "Total Price"
-        get_price
+        output.Range("J1") = "User Quantity"
+'       get_price
         multiply
-        output.Range("P2") = Application.WorksheetFunction.Sum(output.Range("L:L"))
+        output.Range("P2") = Application.WorksheetFunction.Sum(output.Range("K:K"))
+        output.Range("K1") = "Total Cost"
         output.Activate
     Else
         MsgBox "Please Enter Quantity Again!"
     End If
 
+    Application.CutCopyMode = False
+    On Error Resume Next
+    ActiveSheet.ListObjects.Add(xlSrcRange, Range(Cells(1, 1), Cells(j - 1, 11)), , xlYes).Name = _
+        "Table1"
+    'Range("Table1[#All]").Select
+    ThisWorkbook.RefreshAll
+    Worksheets("Output Summary").Select
+    Cells(4, 1).Select
+    
 End Sub
 
 
@@ -88,10 +100,10 @@ Sub multiply()
     ReDim Preserve multi(1 To rg.Rows.Count, 1 To rg.Columns.Count + 1)
     
     For i = LBound(multi) To UBound(multi)
-        multi(i, 9) = multi(i, 7) * multi(i, 8)
-        multi(i, 12) = multi(i, 9) * multi(i, 11)
+        multi(i, 11) = multi(i, 7) * multi(i, 8) * multi(i, 10)
     Next i
     
-    output.Range("A2:L" & rg.Rows.Count + 1).Value = multi
+    output.Range("A2:K" & rg.Rows.Count + 1).Value = multi
     
+
 End Sub

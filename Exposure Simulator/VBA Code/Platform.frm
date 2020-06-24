@@ -1,11 +1,12 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} Platform 
    Caption         =   "Exposure Simulator UI"
-   ClientHeight    =   10170
+   ClientHeight    =   9432.001
    ClientLeft      =   -120
    ClientTop       =   -495
-   ClientWidth     =   22545
+   ClientWidth     =   18390
    OleObjectBlob   =   "Platform.frx":0000
+   ShowModal       =   0   'False
    StartUpPosition =   1  'CenterOwner
 End
 Attribute VB_Name = "Platform"
@@ -118,7 +119,60 @@ Private Function GetSelectionsPlatCompare() As Collection
     
 End Function
 
+Private Sub Base_MPA_Click()
+'Displays MPA
+    Dim collbase As New Collection
+    Dim collreg As New Collection
+    
+    Dim i As Long, j As Long
+    
+
+    
+    For j = 0 To Platform_Base.ListCount - 1
+        If Platform_Base.Selected(j) = True Then
+            collbase.Add Platform_Base.List(j)
+        End If
+    Next j
+    
+    For i = 0 To Region_Base.ListCount - 1
+        If Region_Base.Selected(i) = True Then
+            collreg.Add Region_Base.List(i)
+        End If
+    Next i
+    
+    SQLMPA collbase, collreg
+    
+    Dim mpa_range As Range
+    Set mpa_range = RefSheet.Range("L1").CurrentRegion
+    If mpa_range.Rows.Count = 2 Then
+        UserMPA.Clear
+        UserMPA.AddItem RefSheet.Range("L2").Value2
+    ElseIf IsEmpty(RefSheet.Range("L2")) Then
+        MsgBox ("Invalid please select again")
+    Else
+        Set mpa_range = RefSheet.Range("L1:L" & mpa_range.Rows.Count)
+        mpa_range.RemoveDuplicates Columns:=Array(1), Header:=xlYes
+        lastRow = RefSheet.Cells(Rows.Count, "L").End(xlUp).row
+        'UserMPA.List = RefSheet.Range("L2:L" & mpa_range.Rows.Count).Value2
+        If lastRow = 2 Then
+            UserMPA.List = RefSheet.Range("L2:L3").Value2
+        Else
+            UserMPA.List = RefSheet.Range("L2:L" & lastRow).Value2
+        End If
+    End If
+
+    'Sort by the 1st column in the ListBox Alphabetically in Ascending Order
+    If lastRow = 2 Then
+    'do Nothing
+    Else
+        Run "SortListBox", UserMPA, 0, 1, 1
+    End If
+ThisWorkbook.Activate
+End Sub
+
 Private Sub Button_Quantity_Click()
+Application.StatusBar = "This process may take a few minutes depending on the number of selected SKUs, thank you for your patience"
+Application.ScreenUpdating = False
 
     Dim collskucompare As New Collection
     Dim collskubase As New Collection
@@ -151,7 +205,7 @@ Private Sub Button_Quantity_Click()
     Set rg = Quan.Range("A1").CurrentRegion
     rg.Cells.ClearContents
     
-'    SQLSKU_MPA collskubase
+    
     
     Hide
     row = 2
@@ -174,20 +228,24 @@ Private Sub Button_Quantity_Click()
     SQLSKUCOMPARE collskubase, collskucompare
     
     
-    
+Application.ScreenUpdating = True
 End Sub
 
 Private Sub ButtonCancel_Click()
     ' Hide the Userform and set cancelled to true
+    
     Hide
     m_Cancelled = True
+    
 End Sub
 
 Private Sub ButtonRegion_Click()
-
+'Displays region
     Set m_plat_base = GetSelectionsPlatBase
 
     SQLPLATFORM_REGION plat_base
+    
+    
     
     Dim region_range As Range
     Set region_range = RefSheet.Range("C1").CurrentRegion
@@ -200,8 +258,23 @@ Private Sub ButtonRegion_Click()
         Set region_range = RefSheet.Range("C1:C" & region_range.Rows.Count)
         region_range.RemoveDuplicates Columns:=Array(1), Header:=xlYes
         Region_Base.List = RefSheet.Range("C2:C" & region_range.Rows.Count).Value2
+        lastRow = RefSheet.Cells(Rows.Count, "C").End(xlUp).row
+        If lastRow = 2 Then
+            UserMPA.List = RefSheet.Range("C2:C3").Value2
+        Else
+            'Region_Base.List = RefSheet.Range("C2:C" & region_range.Rows.Count).Value2
+            Region_Base.List = RefSheet.Range("C2:C" & lastRow).Value2
+        End If
     End If
-    
+
+    'Sort by the 1st column in the ListBox Alphabetically in Ascending Order
+    If lastRow = 2 Then
+    'do Nothing
+    Else
+    Run "SortListBox", Region_Base, 0, 1, 1
+    End If
+
+ThisWorkbook.Activate
 End Sub
 
 Private Sub ButtonRegion_Compare_Click()
@@ -209,6 +282,8 @@ Private Sub ButtonRegion_Compare_Click()
     Set m_plat_compare = GetSelectionsPlatCompare
 
     SQLPLATFORM_REGION_COMPARE plat_compare
+    
+    
     
     Dim region_range As Range
     Set region_range = RefSheet.Range("H1").CurrentRegion
@@ -220,17 +295,27 @@ Private Sub ButtonRegion_Compare_Click()
     Else
         Set region_range = RefSheet.Range("H1:H" & region_range.Rows.Count)
         region_range.RemoveDuplicates Columns:=Array(1), Header:=xlYes
-        Region_Compare.List = RefSheet.Range("H2:H" & region_range.Rows.Count).Value2
+        lastRow = RefSheet.Cells(Rows.Count, "H").End(xlUp).row
+        'Region_Compare.List = RefSheet.Range("H2:H" & region_range.Rows.Count).Value2
+        Region_Compare.List = RefSheet.Range("H2:H" & lastRow).Value2
     End If
     
+    'Sort by the 1st column in the ListBox Alphabetically in Ascending Order
+    If lastRow = 2 Then
+    'do Nothing
+    Else
+    Run "SortListBox", Region_Compare, 0, 1, 1
+    End If
+ThisWorkbook.Activate
 End Sub
 
 Private Sub ButtonSKU_Click()
-   
+'Displays Platform to compare to
     Set m_plat_base = GetSelectionsPlatBase
     Set m_region_base = GetSelectionsREGIONBase
 
     SQLPLATFORM_REGION_SKU plat_base, Region_B
+
 
     Dim sku_range As Range
     Set sku_range = RefSheet.Range("E1").CurrentRegion
@@ -244,42 +329,34 @@ Private Sub ButtonSKU_Click()
 '        sku_range.RemoveDuplicates Columns:=Array(1), Header:=xlYes
 '        Base_SKU.List(1, 0) = RefSheet.Range("E2:E" & sku_range.Rows.Count).Value2
 '    End If
-    Dim i As Long, mpa As String, listrow As Long
+    sku_range.RemoveDuplicates Columns:=Array(1), Header:=xlYes
+    Dim i As Long, j As Long, mpa As String, listrow As Long
     listrow = 0
+    Dim collmpa As New Collection
+    
+    For i = 0 To UserMPA.ListCount - 1
+        If UserMPA.Selected(i) Then
+            collmpa.Add UserMPA.List(i)
+        End If
+    Next i
+
+    Dim Selmpa As Variant
     With Base_SKU
         .Clear
-        For i = 0 To sku_range.Rows.Count
-            mpa = RefSheet.Range("F" & i + 2).Value2
-            If CheckBox5.Value = True And mpa = "Foxconn ChongQing" Then
-                .AddItem
-                .List(listrow, 0) = RefSheet.Range("E" & i + 2).Value2
-                .List(listrow, 1) = RefSheet.Range("F" & i + 2).Value2
-                listrow = listrow + 1
-            ElseIf CheckBox6.Value = True And mpa = "Flex PTP Malasya" Then
-                .AddItem
-                .List(listrow, 0) = RefSheet.Range("E" & i + 2).Value2
-                .List(listrow, 1) = RefSheet.Range("F" & i + 2).Value2
-                listrow = listrow + 1
-            ElseIf CheckBox7.Value = True And mpa = "Flex Zhuhai" Then
-                .AddItem
-                .List(listrow, 0) = RefSheet.Range("E" & i + 2).Value2
-                .List(listrow, 1) = RefSheet.Range("F" & i + 2).Value2
-                listrow = listrow + 1
-            ElseIf CheckBox8.Value = True And mpa = "NKG Yue Yang" Then
-                .AddItem
-                .List(listrow, 0) = RefSheet.Range("E" & i + 2).Value2
-                .List(listrow, 1) = RefSheet.Range("F" & i + 2).Value2
-                listrow = listrow + 1
-            ElseIf CheckBox9.Value = True And mpa = "NKG Thailand" Then
-                .AddItem
-                .List(listrow, 0) = RefSheet.Range("E" & i + 2).Value2
-                .List(listrow, 1) = RefSheet.Range("F" & i + 2).Value2
-                listrow = listrow + 1
-            End If
-            
-        Next i
+        For Each Selmpa In collmpa
+            For j = 0 To sku_range.Rows.Count
+                If Selmpa = RefSheet.Range("F" & j + 2).Value2 Then
+                    .AddItem
+                    .List(listrow, 0) = RefSheet.Range("E" & j + 2).Value2
+                    .List(listrow, 1) = RefSheet.Range("F" & j + 2).Value2
+                    listrow = listrow + 1
+                End If
+            Next j
+        Next Selmpa
     End With
-    
+
+    Run "SortListBox", Base_SKU, 0, 1, 1
+ThisWorkbook.Activate
 End Sub
 
 Private Sub ButtonSKU_Compare_Click()
@@ -288,6 +365,8 @@ Private Sub ButtonSKU_Compare_Click()
     Set m_region_compare = GetSelectionsREGIONCompare
 
     SQLPLATFORM_REGION_SKU_COMPARE plat_compare, Region_C
+    
+    
     
     Dim sku_range As Range
     Set sku_range = RefSheet.Range("J1").CurrentRegion
@@ -299,9 +378,18 @@ Private Sub ButtonSKU_Compare_Click()
     Else
         Set sku_range = RefSheet.Range("J1:J" & sku_range.Rows.Count)
         sku_range.RemoveDuplicates Columns:=Array(1), Header:=xlYes
-        Compare_SKU.List = RefSheet.Range("J2:J" & sku_range.Rows.Count).Value2
+        lastRow = RefSheet.Cells(Rows.Count, "J").End(xlUp).row
+        'Compare_SKU.List = RefSheet.Range("J2:J" & sku_range.Rows.Count).Value2
+        Compare_SKU.List = RefSheet.Range("J2:J" & lastRow).Value2
     End If
     
+    'Sort by the 1st column in the ListBox Alphabetically in Ascending Order
+    If lastRow = 2 Then
+    'do Nothing
+    Else
+    Run "SortListBox", Compare_SKU, 0, 1, 1
+    End If
+ThisWorkbook.Activate
 End Sub
 
 Private Sub CheckBox1_Click()
@@ -365,6 +453,17 @@ Private Sub CheckBox4_Click()
 End Sub
 
 
+Private Sub ToggleButton1_Click()
+    Dim rgplat As Range, rgplatcompare As Range
+    Set rgplat = RefSheet.Range("A1").CurrentRegion
+    If IsEmpty(RefSheet.Range("H2")) Then
+            MsgBox ("Invalid please select again")
+    Else
+        Platform_Compare.List = rgplat.Range("A2" & ":" & "A" & rgplat.Rows(rgplat.Rows.Count).row).Value2
+    End If
+ThisWorkbook.Activate
+End Sub
+
 Private Sub UserForm_QueryClose(Cancel As Integer _
                                        , CloseMode As Integer)
     
@@ -382,7 +481,7 @@ Private Sub UserForm_Initialize()
     Dim rgplat As Range, rgplatcompare As Range
     Set rgplat = RefSheet.Range("A1").CurrentRegion
     Platform_Base.List = rgplat.Range("A2" & ":" & "A" & rgplat.Rows(rgplat.Rows.Count).row).Value2
-    Platform_Compare.List = rgplat.Range("A2" & ":" & "A" & rgplat.Rows(rgplat.Rows.Count).row).Value2
+    'Platform_Compare.List = rgplat.Range("A2" & ":" & "A" & rgplat.Rows(rgplat.Rows.Count).row).Value2
     Base_SKU.ColumnCount = 2
     
  
